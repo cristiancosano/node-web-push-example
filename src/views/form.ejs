@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form</title>
+    <link href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAD//wAAKysrAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEREREREREREREREREREREREAAAAAAAAREQEREREREBERAQAAAAAQEREBAAAAABAREQEBEAEQEBERAQEQARAQEREBARABEBAREQEBEAEQEBERAQAAAAAQEREBAAAAABAREQEREREREBERAAAAAAAAEREREREREREREREREREREREAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" rel="icon" type="image/x-icon" />
+</head>
+<body>
+    <h1>Hi! This is a form =)</h1>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut nihil dolorum necessitatibus explicabo exercitationem ratione libero labore voluptas architecto, magnam suscipit soluta, eveniet amet iure, id in perferendis quaerat reprehenderit!</p>
+    <form action="/api/notify" method="POST">
+        <input type="text" placeholder="Title" name="title">
+        <input type="text" placeholder="Description" name="description">
+        <button type="submit">Send</button>
+    </form>
+    <script>
+        window.addEventListener('load', async () => {
+            if (!'serviceWorker' in navigator) {
+                console.log('Service workers are not supported.')
+                return
+            }
+            console.log('Service worker is supported');
+            
+            requestPermission();
+
+            navigator.permissions.query({name: 'notifications'}).then(async (permission) => {
+                if(permission === 'granted'){
+                    const sw = await navigator.serviceWorker.register('/serviceWorker.js');
+                    await subscribe();
+                }
+                permission.onchange = async (event) => {
+                    const state = permission.state
+                    if(state === 'granted'){
+                        const sw = await navigator.serviceWorker.register('/serviceWorker.js');
+                        await subscribe();
+                    }
+                    console.log('permission changed to', event.target.state)
+                }
+            })
+
+
+
+            console.log('ready to receive web push')
+        })
+
+        const subscribe = async () => {
+            const serviceWorker = await navigator.serviceWorker.ready; // 1
+            const subscription = await serviceWorker.pushManager.getSubscription(); // 2
+            console.log(subscription)
+
+            if (!subscription) {
+                console.log('subscribing....');
+                const push = await serviceWorker.pushManager.subscribe({ // 3
+                    userVisibleOnly: true,
+                    applicationServerKey: 'BKsTWnS-D3JRn-EcoMfnOP6xolKPlupDrkMsUKukgBepL3Z_8UkHVuy21nYWOKbnQDhpDyL8R4_RjrjZbRElqBc'
+                })
+                console.log('subscribed. ', push);
+
+                await sendToServer(push);
+            }
+        }
+
+        const sendToServer = async subData => {
+            console.log('saving to server...');
+            await fetch("/api/subscribe", {
+                method: "POST",
+                headers: {
+                    'content-type': 'application/json'
+                },
+                body: JSON.stringify({ subscriptor: subData })
+            });
+        }
+
+        const requestPermission = () => {
+            Notification.requestPermission().then((permission) => {
+                console.log('permission: '+permission)
+                //default - denied
+                if (permission === "granted") {
+
+                }
+                else if(permission == 'denied'){
+
+                }
+                else if(permision == 'default'){
+                    
+                }
+            })
+        }
+    </script>
+
+    <script>
+        (function () { var script = document.createElement('script'); script.src="//cdn.jsdelivr.net/npm/eruda"; document.body.appendChild(script); script.onload = function () { eruda.init() } })();
+
+    </script>
+</body>
+</html>
