@@ -24,13 +24,14 @@ router.post('/notify', (req, res) => {
     const body = req.body
     const title = body.title
     const description = body.description
+    const link = body.link
 
     try{
         const clients = new Client()
         console.log(clients.getList())
         clients.getList().forEach(user => {
             console.log(webpush)
-            webpush.sendNotification(user, JSON.stringify({title, description}))
+            webpush.sendNotification(user, JSON.stringify({title, description, link}))
         })
 
     } catch(e){
