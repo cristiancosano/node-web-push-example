@@ -1,100 +1,132 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="manifest" href="manifest.webmanifest">
-    <title>Form</title>
-    <link href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAD//wAAKysrAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEREREREREREREREREREREREAAAAAAAAREQEREREREBERAQAAAAAQEREBAAAAABAREQEBEAEQEBERAQEQARAQEREBARABEBAREQEBEAEQEBERAQAAAAAQEREBAAAAABAREQEREREREBERAAAAAAAAEREREREREREREREREREREREAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" rel="icon" type="image/x-icon" />
-</head>
-<body>
-    <h1>Hi! This is a form =)</h1>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut nihil dolorum necessitatibus explicabo exercitationem ratione libero labore voluptas architecto, magnam suscipit soluta, eveniet amet iure, id in perferendis quaerat reprehenderit!</p>
-    <form action="/api/notify" method="POST">
-        <input type="text" placeholder="Title" name="title">
-        <input type="text" placeholder="Description" name="description">
-        <input type="text" placeholder="Link when user click in notification" name="link" value="https://alinatal.es/">
-        <button type="submit">Send</button>
-    </form>
-    <script>
-        window.addEventListener('load', async () => {
-            if (!'serviceWorker' in navigator) {
-                console.log('Service workers are not supported.')
-                return
-            }
-            console.log('Service worker is supported');
-            
-            requestPermission();
-
-            navigator.permissions.query({name: 'notifications'}).then(async (permission) => {
-                if(permission === 'granted'){
-                    const sw = await navigator.serviceWorker.register('/serviceWorker.js');
-                    await subscribe();
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="manifest" href="manifest.webmanifest">
+        <title>Form</title>
+        <link href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAD//wAAKysrAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEREREREREREREREREREREREAAAAAAAAREQEREREREBERAQAAAAAQEREBAAAAABAREQEBEAEQEBERAQEQARAQEREBARABEBAREQEBEAEQEBERAQAAAAAQEREBAAAAABAREQEREREREBERAAAAAAAAEREREREREREREREREREREREAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" rel="icon" type="image/x-icon" />
+    </head>
+    <body>
+        <h1>Hi! This is a form =)</h1>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut nihil dolorum necessitatibus explicabo exercitationem ratione libero labore voluptas architecto, magnam suscipit soluta, eveniet amet iure, id in perferendis quaerat reprehenderit!</p>
+        <form action="/api/notify" method="POST">
+            <input type="text" placeholder="Title" name="title">
+            <input type="text" placeholder="Description" name="description">
+            <input type="text" placeholder="Link when user click in notification" name="link" value="https://alinatal.es/">
+            <button type="button" class=".add-button">A2HS</button>
+            <button type="submit">Send</button>
+        </form>
+        <script>
+            window.addEventListener('load', async () => {
+                if (!'serviceWorker' in navigator) {
+                    console.log('Service workers are not supported.')
+                    return
                 }
-                permission.onchange = async (event) => {
-                    const state = permission.state
-                    if(state === 'granted'){
+                console.log('Service worker is supported');
+                
+                requestPermission();
+
+                navigator.permissions.query({name: 'notifications'}).then(async (permission) => {
+                    if(permission === 'granted'){
                         const sw = await navigator.serviceWorker.register('/serviceWorker.js');
                         await subscribe();
                     }
-                    console.log('permission changed to', event.target.state)
-                }
-            })
-
-
-
-            console.log('ready to receive web push')
-        })
-
-        const subscribe = async () => {
-            const serviceWorker = await navigator.serviceWorker.ready; // 1
-            const subscription = await serviceWorker.pushManager.getSubscription(); // 2
-            console.log(subscription)
-
-            if (!subscription) {
-                console.log('subscribing....');
-                const push = await serviceWorker.pushManager.subscribe({ // 3
-                    userVisibleOnly: true,
-                    applicationServerKey: 'BKsTWnS-D3JRn-EcoMfnOP6xolKPlupDrkMsUKukgBepL3Z_8UkHVuy21nYWOKbnQDhpDyL8R4_RjrjZbRElqBc'
+                    permission.onchange = async (event) => {
+                        const state = permission.state
+                        if(state === 'granted'){
+                            const sw = await navigator.serviceWorker.register('/serviceWorker.js');
+                            await subscribe();
+                        }
+                        console.log('permission changed to', event.target.state)
+                    }
                 })
-                console.log('subscribed. ', push);
 
-                await sendToServer(push);
-            }
-        }
 
-        const sendToServer = async subData => {
-            console.log('saving to server...');
-            await fetch("/api/subscribe", {
-                method: "POST",
-                headers: {
-                    'content-type': 'application/json'
-                },
-                body: JSON.stringify({ subscriptor: subData })
-            });
-        }
 
-        const requestPermission = () => {
-            Notification.requestPermission().then((permission) => {
-                console.log('permission: '+permission)
-                //default - denied
-                if (permission === "granted") {
-
-                }
-                else if(permission == 'denied'){
-
-                }
-                else if(permision == 'default'){
-                    
-                }
+                console.log('ready to receive web push')
             })
-        }
-    </script>
 
-    <script>
-        (function () { var script = document.createElement('script'); script.src="//cdn.jsdelivr.net/npm/eruda"; document.body.appendChild(script); script.onload = function () { eruda.init() } })();
+            const subscribe = async () => {
+                const serviceWorker = await navigator.serviceWorker.ready; // 1
+                const subscription = await serviceWorker.pushManager.getSubscription(); // 2
+                console.log(subscription)
 
-    </script>
-</body>
-</html>
+                if (!subscription) {
+                    console.log('subscribing....');
+                    const push = await serviceWorker.pushManager.subscribe({ // 3
+                        userVisibleOnly: true,
+                        applicationServerKey: 'BKsTWnS-D3JRn-EcoMfnOP6xolKPlupDrkMsUKukgBepL3Z_8UkHVuy21nYWOKbnQDhpDyL8R4_RjrjZbRElqBc'
+                    })
+                    console.log('subscribed. ', push);
+
+                    await sendToServer(push);
+                }
+            }
+
+            const sendToServer = async subData => {
+                console.log('saving to server...');
+                await fetch("/api/subscribe", {
+                    method: "POST",
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    body: JSON.stringify({ subscriptor: subData })
+                });
+            }
+
+            const requestPermission = () => {
+                Notification.requestPermission().then((permission) => {
+                    console.log('permission: '+permission)
+                    //default - denied
+                    if (permission === "granted") {
+
+                    }
+                    else if(permission == 'denied'){
+
+                    }
+                    else if(permision == 'default'){
+                        
+                    }
+                })
+            }
+        </script>
+
+        <script>
+            (function () { var script = document.createElement('script'); script.src="//cdn.jsdelivr.net/npm/eruda"; document.body.appendChild(script); script.onload = function () { eruda.init() } })();
+
+        </script>
+
+
+        <script>
+            let deferredPrompt;
+            const addBtn = document.querySelector('.add-button');
+            addBtn.style.display = 'none';
+            window.addEventListener('beforeinstallprompt', (e) => {
+                // Prevent Chrome 67 and earlier from automatically showing the prompt
+                e.preventDefault();
+                // Stash the event so it can be triggered later.
+                deferredPrompt = e;
+                // Update UI to notify the user they can add to home screen
+                addBtn.style.display = 'block';
+
+                addBtn.addEventListener('click', (e) => {
+                    // hide our user interface that shows our A2HS button
+                    addBtn.style.display = 'none';
+                    // Show the prompt
+                    deferredPrompt.prompt();
+                    // Wait for the user to respond to the prompt
+                    deferredPrompt.userChoice.then((choiceResult) => {
+                        if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the A2HS prompt');
+                        } else {
+                        console.log('User dismissed the A2HS prompt');
+                        }
+                        deferredPrompt = null;
+                    });
+                });
+            });
+        </script>
+    </body>
+    </html>
