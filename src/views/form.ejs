@@ -7,16 +7,19 @@
         <link rel="manifest" href="manifest.webmanifest">
         <title>Form</title>
         <link href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAD//wAAKysrAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEREREREREREREREREREREREAAAAAAAAREQEREREREBERAQAAAAAQEREBAAAAABAREQEBEAEQEBERAQEQARAQEREBARABEBAREQEBEAEQEBERAQAAAAAQEREBAAAAABAREQEREREREBERAAAAAAAAEREREREREREREREREREREREAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" rel="icon" type="image/x-icon" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     </head>
     <body>
         <h1>Hi! This is a form =)</h1>
         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut nihil dolorum necessitatibus explicabo exercitationem ratione libero labore voluptas architecto, magnam suscipit soluta, eveniet amet iure, id in perferendis quaerat reprehenderit!</p>
         <form action="/api/notify" method="POST">
-            <input type="text" placeholder="Title" name="title">
-            <input type="text" placeholder="Description" name="description">
-            <input type="text" placeholder="Link when user click in notification" name="link" value="https://alinatal.es/">
-            <button type="button" class="add-button">A2HS</button>
-            <button type="submit">Send</button>
+            <input type="text" class="form-control" placeholder="Titulo" name="title">
+            <input type="text" class="form-control" placeholder="Descripcion" name="description">
+            <input type="text" class="form-control" placeholder="Enlace que se abre cuando el usuario pulse en la notificacion" name="link" value="https://alinatal.es/">
+            <div class="d-grid gap-2">
+                <button type="button" class="btn btn-secondary add-button">Instalar app</button>
+                <button type="btn btn-primary submit">Enviar notificacion</button>
+            </div>
         </form>
         <script>
             window.addEventListener('load', async () => {
