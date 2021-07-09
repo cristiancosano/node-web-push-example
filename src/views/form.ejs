@@ -24,8 +24,9 @@
             </form>
         </div>
         <script>
+            var iOS = ['iPad', 'iPhone', 'iPod'].indexOf(navigator.platform) >= 0;
             window.addEventListener('load', async () => {
-                if (!'serviceWorker' in navigator) {
+                if (!'serviceWorker' in navigator && !iOS) {
                     console.log('Service workers are not supported.')
                     return
                 }
